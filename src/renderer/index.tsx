@@ -11,6 +11,8 @@ import { PendingPage } from "./pages/pending-page";
 import { PodsPage } from "./pages/pods-page";
 import { WastePage } from "./pages/waste-page";
 
+import "./styles.scss";
+
 export default class GpuExtensionRenderer extends Renderer.LensExtension {
   clusterPages = [
     { id: "gpu-pods", components: { Page: () => <PodsPage extension={this} /> } },
