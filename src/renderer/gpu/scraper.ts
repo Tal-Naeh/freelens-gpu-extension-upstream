@@ -203,13 +203,14 @@ const defaultDeps: ScraperDeps = {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      // Inside a cluster frame the window origin IS the Lens proxy for this
-      // cluster, and /api-kube/* is forwarded to the kube-apiserver with the
-      // kubeconfig's auth. This is the path Freelens itself uses.
+      // KubeJsonApi.forCluster(clusterId) goes through the Freelens proxy for
+      // the catalog cluster. Freelens 1.x declared it without providing it at
+      // runtime, so it is still checked before use.
       //
-      // The typed KubeJsonApi.forCluster(clusterId) is only used when the
-      // running Freelens actually provides it (1.10.3 declares it in the
-      // typings but not at runtime).
+      // Otherwise: inside a cluster frame the window origin IS the Freelens
+      // proxy for this cluster, and /api-kube/* is forwarded to the
+      // kube-apiserver with the kubeconfig's auth. Renderer.Util.fetch is the
+      // host's client for it.
       const forCluster = (Renderer.K8sApi.KubeJsonApi as unknown as { forCluster?: unknown }).forCluster;
       if (typeof forCluster === "function") {
         try {
@@ -220,7 +221,7 @@ const defaultDeps: ScraperDeps = {
           log.warn(`KubeJsonApi.forCluster GET ${path} failed, falling back to /api-kube: ${describe(e)}`);
         }
       }
-      const res = await fetch(`/api-kube${path}`, { signal: ctrl.signal, credentials: "include" });
+      const res = await Renderer.Util.fetch(`/api-kube${path}`, { signal: ctrl.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} for /api-kube${path}`);
       return await res.text();
     } finally {
