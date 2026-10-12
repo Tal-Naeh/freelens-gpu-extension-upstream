@@ -46,8 +46,9 @@ are blacked out.
 
 ## Requirements
 
-- **Freelens >= 1.8.0.** Verified on Freelens 1.10.3, the version the
-  integration tests run against.
+- **Freelens >= 2.0.0.** The extension targets the Freelens v2 extension
+  API; the integration tests run against Freelens `main` until v2 is
+  released. Freelens 1.x users stay on 0.9.x.
 - **An exporter the extension recognises**, running in the cluster:
   - **dcgm-exporter**: image contains `dcgm-exporter`, or `/metrics` emits
     `DCGM_FI_DEV_*`. Per-pod attribution needs `--kubernetes` (the GPU
@@ -229,19 +230,17 @@ a MobX store that polls every 20 s while a GPU view is mounted.
   holds them.
 - The idle history behind **Idle & waste** is kept in memory while Freelens
   is open; it starts again at every launch.
-- The extension targets the Freelens 1.x extension API. The port to the
-  Freelens v2 API will be a new major version.
 
 ## Development
 
-Node 24.15.0 (`.nvmrc`, `mise.toml`) and `corepack pnpm`. Run the local
+Node 24.21.0 (`.nvmrc`, `mise.toml`) and `corepack pnpm`. Run the local
 gates after every change:
 
 ```sh
 pnpm type:check
 pnpm lint:check      # biome (lint:fix to auto-format)
 pnpm trunk:check     # Markdown, YAML and the other formats
-pnpm build           # electron-vite, then a Main bundle smoke test
+pnpm build           # vite: dist/main.js, dist/renderer.js, dist/renderer.css
 pnpm knip:check
 pnpm test:unit       # vitest: parser and aggregation against src/renderer/gpu/__tests__/fixtures
 ```
