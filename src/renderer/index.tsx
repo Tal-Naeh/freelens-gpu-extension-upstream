@@ -1,4 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
+import { withDetailsErrorBoundary, withPageErrorBoundary } from "./components/error-boundary";
 import { GpuIcon } from "./components/gpu-icon";
 import { NodeGpuDetails } from "./components/node-gpu-details";
 import { PodGpuDetails } from "./components/pod-gpu-details";
@@ -14,7 +15,7 @@ import { WastePage } from "./pages/waste-page";
 import "./styles.scss";
 
 export default class GpuExtensionRenderer extends Renderer.LensExtension {
-  clusterPages = [
+  clusterPages: Renderer.LensExtension["clusterPages"] = [
     { id: "gpu-pods", components: { Page: () => <PodsPage extension={this} /> } },
     { id: "gpu-namespaces", components: { Page: () => <NamespacesPage extension={this} /> } },
     { id: "gpu-inference", components: { Page: () => <InferencePage extension={this} /> } },
@@ -23,7 +24,7 @@ export default class GpuExtensionRenderer extends Renderer.LensExtension {
     { id: "gpu-allocation", components: { Page: () => <AllocationPage extension={this} /> } },
     { id: "gpu-pending", components: { Page: () => <PendingPage extension={this} /> } },
     { id: "gpu-exporters", components: { Page: () => <ExportersPage extension={this} /> } },
-  ];
+  ].map((registration) => withPageErrorBoundary(this, registration));
 
   clusterPageMenus = [
     { id: "gpu", title: "GPU", components: { Icon: GpuIcon } },
@@ -55,22 +56,8 @@ export default class GpuExtensionRenderer extends Renderer.LensExtension {
     { id: "gpu-exporters", parentId: "gpu", target: { pageId: "gpu-exporters" }, title: "Exporters", components: {} },
   ];
 
-  kubeObjectDetailItems = [
-    {
-      kind: "Pod",
-      apiVersions: ["v1"],
-      priority: 5,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<any>) => <PodGpuDetails {...props} />,
-      },
-    },
-    {
-      kind: "Node",
-      apiVersions: ["v1"],
-      priority: 5,
-      components: {
-        Details: (props: Renderer.Component.KubeObjectDetailsProps<any>) => <NodeGpuDetails {...props} />,
-      },
-    },
-  ];
+  kubeObjectDetailItems: Renderer.LensExtension["kubeObjectDetailItems"] = [
+    Renderer.K8sApi.detailsFor(Renderer.K8sApi.Pod, { priority: 5, Details: PodGpuDetails }),
+    Renderer.K8sApi.detailsFor(Renderer.K8sApi.Node, { priority: 5, Details: NodeGpuDetails }),
+  ].map((registration) => withDetailsErrorBoundary(this, registration));
 }
