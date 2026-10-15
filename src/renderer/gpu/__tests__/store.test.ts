@@ -19,7 +19,17 @@ describe("GpuStore", () => {
   it("makes its decorated fields observable", () => {
     const store = new GpuStore();
 
-    for (const field of ["snapshot", "pins", "inference", "podState", "error", "loading", "nodes", "nodesError"]) {
+    for (const field of [
+      "snapshot",
+      "pins",
+      "inference",
+      "podState",
+      "error",
+      "loading",
+      "nodes",
+      "nodesError",
+      "historyVersion",
+    ]) {
       expect(isObservableProp(store, field)).toBe(true);
     }
   });
