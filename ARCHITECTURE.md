@@ -14,7 +14,7 @@ is the kube-apiserver itself, reached through Freelens' proxy, so the renderer c
 
 ```text
 podsApi.list()  ──▶ candidates (Running, name/image/labels ∋ dcgm|gpu|nvidia|cuda, metrics port)
-                        │  fetch(`/api-kube/api/v1/namespaces/<ns>/pods/<pod>:<port>/proxy/metrics`)
+                        │  KubeJsonApi.forCluster(id).getResponse(`/api/v1/namespaces/<ns>/pods/<pod>:<port>/proxy/metrics`)
                         ▼
                 classifyMetrics(body) ──▶ ExporterPod{kind: dcgm | enricher}     (cached 60 s)
                         │
@@ -53,14 +53,18 @@ the container hostname (the exporter pod name) unless the DaemonSet sets `NODE_N
 (`mig.strategy=mixed`), in devices, which is the same unit the exporters report. Time-slicing replicas renamed to
 `*.shared` are not devices and are left out of the counts, but a pod requesting one still counts as a GPU pod.
 
-## Why the relative `/api-kube` fetch
+## Requests to the kube-apiserver
 
-Inside a cluster frame the window origin is Freelens' proxy for that cluster and `/api-kube/*` is forwarded to the
-kube-apiserver with the kubeconfig's credentials. `Renderer.K8sApi.KubeJsonApi.forCluster` is used when the host
-provides it; Freelens 1.x declared it in the typings but not at runtime, so it is still probed before use. Otherwise
-the scraper fetches the relative URL with `Renderer.Util.fetch`, the host's client for renderer HTTP. The request is
-same-origin, so the default credentials mode sends the proxy's cookie, and only `ok`, `status`, `statusText` and
-`text()` of the response are read, which the structural `FetchResponse` of the v2 API covers.
+Every request goes through `Renderer.K8sApi.KubeJsonApi.forCluster(clusterId)`, the host's client for the cluster
+of the frame, with its `getResponse`: the response comes back as it is, so a non-2xx answer becomes an
+`HTTP <code> <statusText> for <path>` error, which discovery classifies (404 is a definite "no", anything else is
+retried soon), and the body is read as text, since `/metrics` is not JSON. A failed request is not repeated. The
+Freelens proxy authenticates the request by its authority and adds the kubeconfig's credentials, so `exec` plugins
+and tokens work as they do for the rest of Freelens.
+
+Freelens 1.x declared `forCluster` in the typings but not at runtime, so it is still probed before use. Only on a
+host without it does the scraper fetch the relative `/api-kube/*` URL with `Renderer.Util.fetch`: inside a cluster
+frame the window origin is the proxy for that cluster, and `/api-kube/*` goes to its kube-apiserver.
 
 ## Freelens v2
 

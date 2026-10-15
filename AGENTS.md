@@ -159,7 +159,7 @@ Extensions run in the same multi-process model as the Freelens host:
 - **Main process** (`src/main/`) — Node.js environment; empty in this extension, kept because Freelens loads both entry points
 - **Renderer process** (`src/renderer/`) — Chromium browser, UI components and the whole data layer
 
-The renderer talks to the cluster only through the Freelens proxy (`/api-kube/...`), with the
+The renderer talks to the cluster only through the Freelens proxy (`KubeJsonApi.forCluster`), with the
 kubeconfig credentials of the connected cluster.
 
 ## Testing

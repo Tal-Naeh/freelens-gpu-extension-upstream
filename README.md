@@ -208,7 +208,8 @@ Also:
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md). In short: `podsApi.list()`, then
 a keyword filter, then a probe of each candidate's `/metrics` through
-`/api-kube/api/v1/namespaces/<ns>/pods/<pod>:<port>/proxy/metrics`, a
+`/api/v1/namespaces/<ns>/pods/<pod>:<port>/proxy/metrics` on the host's
+connection to the cluster (`KubeJsonApi.forCluster`), a
 classification by content, a tiny built-in Prometheus text parser, the
 aggregation per pod and per device (a port of the kubectl-gpugo scraper), and
 a MobX store that polls every 20 s while a GPU view is mounted.
