@@ -104,7 +104,7 @@ and its "Rules That Fail Silently" apply here.
   `src/renderer/index.tsx` is mapped through `withDetailsErrorBoundary`; details panels are
   registered with `Renderer.K8sApi.detailsFor` and the host's `Pod` and `Node` classes.
   Cluster pages get no boundary of the extension: the host wraps each of them in its own
-  ("App crash at <path>", with the stacks and a Back button), which is richer.
+  ("App crash at `<path>`", with the stacks and a Back button), which is richer.
 - **Standard decorators.** An observable field of `GpuStore` is `@observable accessor` or
   `@observableRef accessor`, and the class does not call `makeObservable(this)`.
   `src/renderer/gpu/__tests__/store.test.ts` fails otherwise.

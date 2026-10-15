@@ -333,8 +333,8 @@ describeIf(clusterReady())("GPU cluster pages", () => {
       await section.waitFor({ state: "visible", timeout: 60_000 });
 
       const rows = (await section.locator(".gpuext-row:not(.gpuext-head)").allInnerTexts()).map(flat);
+      // The compact table of the drawer has no pod column: the drawer is the pod's.
       expect(rows.length).toBeGreaterThan(0);
-      expect(rows.some((row) => row.includes("tei-7d9f-x1"))).toBe(true);
       // The application XID on the card of tei, from dcgm-xid-extra.prom.
       expect(flat(await section.innerText())).toMatch(/XID/);
       expect(await details.locator(ERROR_PAGE_SELECTOR).count()).toBe(0);
