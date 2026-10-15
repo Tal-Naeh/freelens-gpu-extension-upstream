@@ -3,7 +3,7 @@
 import { Common, type Renderer } from "@freelensapp/extensions";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ErrorBoundary, withDetailsErrorBoundary, withPageErrorBoundary } from "./error-boundary";
+import { ErrorBoundary, withDetailsErrorBoundary } from "./error-boundary";
 
 // A minimal stub extension - only `name` is read by the boundary.
 const extension = { name: "gpu-extension" } as Renderer.LensExtension;
@@ -100,23 +100,6 @@ describe("ErrorBoundary", () => {
 });
 
 describe("the registration wrappers", () => {
-  it("keep an error of a page inside the page", () => {
-    const { Page } = withPageErrorBoundary(extension, {
-      id: "broken",
-      components: { Page: () => <Throws /> },
-    }).components;
-
-    render(
-      <>
-        <Page params={{}} />
-        <p>sidebar</p>
-      </>,
-    );
-
-    expect(screen.getByText("Error: boom")).toBeDefined();
-    expect(screen.getByText("sidebar")).toBeDefined();
-  });
-
   it("keep an error of a details panel inside the panel, and render it again for a new object", () => {
     const { Details } = withDetailsErrorBoundary(extension, {
       kind: "Pod",

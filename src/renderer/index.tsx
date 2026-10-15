@@ -1,5 +1,5 @@
 import { Renderer } from "@freelensapp/extensions";
-import { withDetailsErrorBoundary, withPageErrorBoundary } from "./components/error-boundary";
+import { withDetailsErrorBoundary } from "./components/error-boundary";
 import { GpuIcon } from "./components/gpu-icon";
 import { NodeGpuDetails } from "./components/node-gpu-details";
 import { PodGpuDetails } from "./components/pod-gpu-details";
@@ -15,6 +15,8 @@ import { WastePage } from "./pages/waste-page";
 import "./styles.scss";
 
 export default class GpuExtensionRenderer extends Renderer.LensExtension {
+  // The host wraps every cluster page in an error boundary of its own ("App crash at <path>", with the stacks and a
+  // Back button), so the pages need none here.
   clusterPages: Renderer.LensExtension["clusterPages"] = [
     { id: "gpu-pods", components: { Page: () => <PodsPage extension={this} /> } },
     { id: "gpu-namespaces", components: { Page: () => <NamespacesPage extension={this} /> } },
@@ -24,7 +26,7 @@ export default class GpuExtensionRenderer extends Renderer.LensExtension {
     { id: "gpu-allocation", components: { Page: () => <AllocationPage extension={this} /> } },
     { id: "gpu-pending", components: { Page: () => <PendingPage extension={this} /> } },
     { id: "gpu-exporters", components: { Page: () => <ExportersPage extension={this} /> } },
-  ].map((registration) => withPageErrorBoundary(this, registration));
+  ];
 
   clusterPageMenus = [
     { id: "gpu", title: "GPU", components: { Icon: GpuIcon } },

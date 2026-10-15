@@ -80,6 +80,8 @@ release for Freelens 1.x, which refuses a v2 extension at discovery as v2 refuse
   reaction on a computed value fires.
 - The stylesheet in `src/renderer/styles.scss`, compiled into `dist/renderer.css`, which the host links, instead of a
   `<style>` element rendered by every page and drawer.
-- Pages and the Pod and Node drawer sections inside an error boundary, the drawer sections registered with
-  `Renderer.K8sApi.detailsFor`.
+- The Pod and Node drawer sections inside an error boundary of the extension, registered with
+  `Renderer.K8sApi.detailsFor`: the nearest boundary of the host there is the whole cluster frame. Pages have none of
+  their own, because the host wraps every cluster page in a boundary that shows the error with its stacks and a Back
+  button.
 - One TypeScript program per runtime environment, so a Node API in renderer code fails `pnpm type:check`.

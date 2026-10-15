@@ -100,10 +100,11 @@ and its "Rules That Fail Silently" apply here.
 - **Host CSS is hostile to `<table>`.** Use `DataGrid` (CSS grid) for tabular UI.
 - **Runtime API over typings.** Freelens 1.x declared APIs it did not ship
   (`KubeJsonApi.forCluster`). Probe for existence before relying on a new host API.
-- **Every page and details panel inside an error boundary.** `clusterPages` and
-  `kubeObjectDetailItems` in `src/renderer/index.tsx` are mapped through
-  `withPageErrorBoundary` and `withDetailsErrorBoundary`; details panels are registered
-  with `Renderer.K8sApi.detailsFor` and the host's `Pod` and `Node` classes.
+- **Every details panel inside an error boundary.** `kubeObjectDetailItems` in
+  `src/renderer/index.tsx` is mapped through `withDetailsErrorBoundary`; details panels are
+  registered with `Renderer.K8sApi.detailsFor` and the host's `Pod` and `Node` classes.
+  Cluster pages get no boundary of the extension: the host wraps each of them in its own
+  ("App crash at <path>", with the stacks and a Back button), which is richer.
 - **Standard decorators.** An observable field of `GpuStore` is `@observable accessor` or
   `@observableRef accessor`, and the class does not call `makeObservable(this)`.
   `src/renderer/gpu/__tests__/store.test.ts` fails otherwise.

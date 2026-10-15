@@ -5,7 +5,7 @@
 - Ported to the Freelens v2 extension API: the extension needs Freelens 2.0.0 or newer (`engines.freelens: ^2.0.0`),
   and 0.9.x stays the release for Freelens 1.x. The views and their numbers are unchanged. Under the hood: ESM bundles
   in `dist/` built with Vite after freelens-example-extension, the host's React 19 and mobx 7, standard MobX
-  decorators, the stylesheet as `dist/renderer.css`, error boundaries around every page and drawer section, and one
+  decorators, the stylesheet as `dist/renderer.css`, error boundaries around the drawer sections, and one
   TypeScript program per runtime environment.
 
 ## 0.9.0

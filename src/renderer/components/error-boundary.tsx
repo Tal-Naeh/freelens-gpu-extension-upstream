@@ -2,7 +2,6 @@ import { Common, type Renderer } from "@freelensapp/extensions";
 import React from "react";
 import { ErrorPage } from "./error-page";
 
-type PageRegistration = Renderer.LensExtension["clusterPages"][number];
 type DetailRegistration = Renderer.LensExtension["kubeObjectDetailItems"][number];
 
 export interface ErrorBoundaryProps {
@@ -32,9 +31,10 @@ interface ErrorBoundaryState {
  *
  * A `try`/`catch` around the call of a component does not see such an error: a child component renders later than
  * the call, and the host calls a callback such as `renderTableContents` of `KubeObjectListLayout` from its own
- * render. The host has no boundary around the details drawer of an extension, and its boundary
- * around the cluster frame would replace the whole cluster view. The registrations of the extension are wrapped with
- * `withPageErrorBoundary` and `withDetailsErrorBoundary`.
+ * render. The host has no boundary around the details drawer of an extension, and its boundary around the cluster
+ * frame would replace the whole cluster view, so the details panels are wrapped with `withDetailsErrorBoundary`.
+ * Cluster pages are not: the host already wraps each of them in a boundary of its own, which shows the error with its
+ * stacks and a way back.
  *
  * It is a class component of the host's React, because only a class component can be an error boundary, with no
  * decorators and no `observer`: it reads no observable, and the children it renders are observers of their own.
@@ -59,28 +59,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (this.props.fallback === "nothing") return null;
     return <ErrorPage error={this.state.error} />;
   }
-}
-
-/**
- * The registration of a cluster page, with the page inside an error boundary.
- */
-export function withPageErrorBoundary(
-  extension: Renderer.LensExtension,
-  registration: PageRegistration,
-): PageRegistration {
-  const { Page } = registration.components;
-
-  return {
-    ...registration,
-    components: {
-      ...registration.components,
-      Page: (props) => (
-        <ErrorBoundary extension={extension}>
-          <Page {...props} />
-        </ErrorBoundary>
-      ),
-    },
-  };
 }
 
 /**
