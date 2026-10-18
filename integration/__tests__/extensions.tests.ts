@@ -333,10 +333,10 @@ describeIf(clusterReady())("GPU cluster pages", () => {
       await section.waitFor({ state: "visible", timeout: 60_000 });
 
       const rows = (await section.locator(".gpuext-row:not(.gpuext-head)").allInnerTexts()).map(flat);
-      // The compact table of the drawer has no pod column: the drawer is the pod's.
-      expect(rows.length).toBeGreaterThan(0);
+      // tei has one card, GPU 2; the compact table of the drawer has no pod column: the drawer is the pod's.
+      expect(rows.length).toBe(1);
       // The application XID on the card of tei, from dcgm-xid-extra.prom.
-      expect(flat(await section.innerText())).toMatch(/XID/);
+      expect(flat(await section.innerText())).toMatch(/GPU 2: last XID 31: GPU memory page fault/);
       expect(await details.locator(ERROR_PAGE_SELECTOR).count()).toBe(0);
 
       await window.keyboard.press("Escape");
