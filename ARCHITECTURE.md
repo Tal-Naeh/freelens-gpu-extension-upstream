@@ -62,10 +62,6 @@ retried soon), and the body is read as text, since `/metrics` is not JSON. A fai
 Freelens proxy authenticates the request by its authority and adds the kubeconfig's credentials, so `exec` plugins
 and tokens work as they do for the rest of Freelens.
 
-Freelens 1.x declared `forCluster` in the typings but not at runtime, so it is still probed before use. Only on a
-host without it does the scraper fetch the relative `/api-kube/*` URL with `Renderer.Util.fetch`: inside a cluster
-frame the window origin is the proxy for that cluster, and `/api-kube/*` goes to its kube-apiserver.
-
 ## Freelens v2
 
 The extension targets the Freelens v2 extension API (`engines.freelens: ^2.0.0`) after 0.9.x, the last

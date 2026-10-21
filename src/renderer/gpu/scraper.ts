@@ -194,22 +194,14 @@ export interface ScraperDeps {
 /**
  * GET of a kube-apiserver path through Freelens' connection to the cluster.
  *
- * KubeJsonApi.forCluster(clusterId) is the path in use: its getResponse hands
- * back the response as it is, so a non-2xx answer becomes the `HTTP <code>`
- * error the probes classify, and the body is never parsed as JSON (/metrics is
- * text). The host's proxy authenticates the request by its authority and adds
- * the kubeconfig's credentials.
- *
- * The /api-kube request through Renderer.Util.fetch is only for a host that
- * does not provide forCluster: inside a cluster frame the window origin is the
- * proxy for that cluster, and /api-kube/* goes to its kube-apiserver.
+ * KubeJsonApi.forCluster(clusterId) hands back the response as it is from
+ * getResponse, so a non-2xx answer becomes the `HTTP <code>` error the probes
+ * classify, and the body is never parsed as JSON (/metrics is text). The
+ * host's proxy authenticates the request by its authority and adds the
+ * kubeconfig's credentials.
  */
 function kubeGet(clusterId: string, path: string, signal: AbortSignal) {
-  const forCluster = (Renderer.K8sApi.KubeJsonApi as { forCluster?: unknown }).forCluster;
-  if (typeof forCluster === "function") {
-    return Renderer.K8sApi.KubeJsonApi.forCluster(clusterId).getResponse(path, undefined, { signal });
-  }
-  return Renderer.Util.fetch(`/api-kube${path}`, { signal });
+  return Renderer.K8sApi.KubeJsonApi.forCluster(clusterId).getResponse(path, undefined, { signal });
 }
 
 export const defaultDeps: ScraperDeps = {
